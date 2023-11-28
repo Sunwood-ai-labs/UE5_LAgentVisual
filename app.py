@@ -38,8 +38,10 @@ def plot_metric(df, metric, window_size):
 # Streamlit app
 st.title("UE5 Learning to Drive Data Visualizer")
 
-uploaded_file = st.file_uploader("Upload your log file", type=["log"])
-window_size = st.slider("Select window size for moving average", min_value=1, max_value=100, value=10)
+# Sidebar for inputs
+st.sidebar.header("Input Settings")
+uploaded_file = st.sidebar.file_uploader("Upload your log file", type=["log"])
+window_size = st.sidebar.slider("Select window size for moving average", min_value=1, max_value=500, value=10)
 
 if uploaded_file is not None:
     file_content = uploaded_file.readlines()
