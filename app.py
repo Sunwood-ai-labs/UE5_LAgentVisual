@@ -2,6 +2,22 @@ import streamlit as st
 import re
 import pandas as pd
 import plotly.graph_objects as go
+from PIL import Image
+
+
+image = Image.open('./image/RLcar2.png')
+st.set_page_config(
+    page_title="LAgent Visualizer", 
+    page_icon=image, 
+    layout="wide", 
+    initial_sidebar_state="auto", 
+    menu_items={
+         'Get Help': 'https://twitter.com/hAru_mAki_ch',
+         'Report a bug': "https://twitter.com/hAru_mAki_ch",
+         'About': """
+         # UE5 Learning to Drive Data Visualizer
+         """
+     })
 
 def extract_data_from_log(file_content):
     pattern = r"Iter:\s+(\d+)\s+\|\s+Avg Reward:\s+([-\d.]+)\s+\|\s+Avg Return:\s+([-\d.]+)\s+\|\s+Avg Value:\s+([-\d.]+)\s+\|\s+Avg Episode Length:\s+([-\d.]+)"
@@ -38,25 +54,30 @@ def plot_metric(df, metric, window_size):
 # Streamlit app
 st.title("UE5 Learning to Drive Data Visualizer")
 
+
+
+
 # Sidebar for inputs
 st.sidebar.header("Input Settings")
 uploaded_file = st.sidebar.file_uploader("Upload your log file", type=["log"])
 window_size = st.sidebar.slider("Select window size for moving average", min_value=1, max_value=500, value=10)
 
-if uploaded_file is not None:
-    file_content = uploaded_file.readlines()
-    file_content = [line.decode("utf-8") for line in file_content]
-    
-    df = extract_data_from_log(file_content)
+# メインコンテナを作成し、グラフをこのコンテナ内に表示します。
+with st.container():
+    if uploaded_file is not None:
+        file_content = uploaded_file.readlines()
+        file_content = [line.decode("utf-8") for line in file_content]
+        
+        df = extract_data_from_log(file_content)
 
-    st.header("Average Reward")
-    st.plotly_chart(plot_metric(df, 'Avg Reward', window_size), use_container_width=True)
+        st.header("Average Reward")
+        st.plotly_chart(plot_metric(df, 'Avg Reward', window_size), use_container_width=True)
 
-    st.header("Average Return")
-    st.plotly_chart(plot_metric(df, 'Avg Return', window_size), use_container_width=True)
+        st.header("Average Return")
+        st.plotly_chart(plot_metric(df, 'Avg Return', window_size), use_container_width=True)
 
-    st.header("Average Value")
-    st.plotly_chart(plot_metric(df, 'Avg Value', window_size), use_container_width=True)
+        st.header("Average Value")
+        st.plotly_chart(plot_metric(df, 'Avg Value', window_size), use_container_width=True)
 
-    st.header("Average Episode Length")
-    st.plotly_chart(plot_metric(df, 'Avg Episode Length', window_size), use_container_width=True)
+        st.header("Average Episode Length")
+        st.plotly_chart(plot_metric(df, 'Avg Episode Length', window_size), use_container_width=True)
